@@ -1,0 +1,14 @@
+D:\Users\Szani\source\repos\adventofcode\2023\Day2\CubeConundrum\bin\Debug\net6.0\CubeConundrum.exe
+D:\Users\Szani\source\repos\adventofcode\2023\Day2\CubeConundrum\bin\Debug\net6.0\CubeConundrum.deps.json
+D:\Users\Szani\source\repos\adventofcode\2023\Day2\CubeConundrum\bin\Debug\net6.0\CubeConundrum.runtimeconfig.json
+D:\Users\Szani\source\repos\adventofcode\2023\Day2\CubeConundrum\bin\Debug\net6.0\CubeConundrum.dll
+D:\Users\Szani\source\repos\adventofcode\2023\Day2\CubeConundrum\bin\Debug\net6.0\CubeConundrum.pdb
+D:\Users\Szani\source\repos\adventofcode\2023\Day2\CubeConundrum\obj\Debug\net6.0\CubeConundrum.GeneratedMSBuildEditorConfig.editorconfig
+D:\Users\Szani\source\repos\adventofcode\2023\Day2\CubeConundrum\obj\Debug\net6.0\CubeConundrum.AssemblyInfoInputs.cache
+D:\Users\Szani\source\repos\adventofcode\2023\Day2\CubeConundrum\obj\Debug\net6.0\CubeConundrum.AssemblyInfo.cs
+D:\Users\Szani\source\repos\adventofcode\2023\Day2\CubeConundrum\obj\Debug\net6.0\CubeConundrum.csproj.CoreCompileInputs.cache
+D:\Users\Szani\source\repos\adventofcode\2023\Day2\CubeConundrum\obj\Debug\net6.0\CubeConundrum.dll
+D:\Users\Szani\source\repos\adventofcode\2023\Day2\CubeConundrum\obj\Debug\net6.0\refint\CubeConundrum.dll
+D:\Users\Szani\source\repos\adventofcode\2023\Day2\CubeConundrum\obj\Debug\net6.0\CubeConundrum.pdb
+D:\Users\Szani\source\repos\adventofcode\2023\Day2\CubeConundrum\obj\Debug\net6.0\CubeConundrum.genruntimeconfig.cache
+D:\Users\Szani\source\repos\adventofcode\2023\Day2\CubeConundrum\obj\Debug\net6.0\ref\CubeConundrum.dll
