@@ -1,0 +1,15 @@
+C:\Users\SAE7BP\source\repos\other\adventofcode\2023\Day3\GearRatios\bin\Debug\net6.0\GearRatios.exe
+C:\Users\SAE7BP\source\repos\other\adventofcode\2023\Day3\GearRatios\bin\Debug\net6.0\GearRatios.deps.json
+C:\Users\SAE7BP\source\repos\other\adventofcode\2023\Day3\GearRatios\bin\Debug\net6.0\GearRatios.runtimeconfig.json
+C:\Users\SAE7BP\source\repos\other\adventofcode\2023\Day3\GearRatios\bin\Debug\net6.0\GearRatios.dll
+C:\Users\SAE7BP\source\repos\other\adventofcode\2023\Day3\GearRatios\bin\Debug\net6.0\GearRatios.pdb
+C:\Users\SAE7BP\source\repos\other\adventofcode\2023\Day3\GearRatios\obj\Debug\net6.0\GearRatios.csproj.AssemblyReference.cache
+C:\Users\SAE7BP\source\repos\other\adventofcode\2023\Day3\GearRatios\obj\Debug\net6.0\GearRatios.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\SAE7BP\source\repos\other\adventofcode\2023\Day3\GearRatios\obj\Debug\net6.0\GearRatios.AssemblyInfoInputs.cache
+C:\Users\SAE7BP\source\repos\other\adventofcode\2023\Day3\GearRatios\obj\Debug\net6.0\GearRatios.AssemblyInfo.cs
+C:\Users\SAE7BP\source\repos\other\adventofcode\2023\Day3\GearRatios\obj\Debug\net6.0\GearRatios.csproj.CoreCompileInputs.cache
+C:\Users\SAE7BP\source\repos\other\adventofcode\2023\Day3\GearRatios\obj\Debug\net6.0\GearRatios.dll
+C:\Users\SAE7BP\source\repos\other\adventofcode\2023\Day3\GearRatios\obj\Debug\net6.0\refint\GearRatios.dll
+C:\Users\SAE7BP\source\repos\other\adventofcode\2023\Day3\GearRatios\obj\Debug\net6.0\GearRatios.pdb
+C:\Users\SAE7BP\source\repos\other\adventofcode\2023\Day3\GearRatios\obj\Debug\net6.0\GearRatios.genruntimeconfig.cache
+C:\Users\SAE7BP\source\repos\other\adventofcode\2023\Day3\GearRatios\obj\Debug\net6.0\ref\GearRatios.dll
