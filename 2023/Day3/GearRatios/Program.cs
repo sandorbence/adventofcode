@@ -15,24 +15,35 @@ namespace GearRatios
             string[] text = File.ReadAllLines(filePath);
 
             int partNumberSum = 0;
+            int gearRatioSum = 0;
 
             var firstRowNumbers = FindNumbers(text[0], out List<int> specialCharactersFirstRow);
-            FindNumbers(text[1], out List<int> specialCharactersSecondRow);
+            var secondRowNumbers = FindNumbers(text[1], out List<int> specialCharactersSecondRow);
             partNumberSum += FindPartNumbers(text[0], firstRowNumbers, specialCharactersFirstRow, indexesBefore: null, specialCharactersSecondRow);
+
+            var firstRowAsterisks = FindAsterisks(text[0]);
+            gearRatioSum += FindGears(firstRowAsterisks, text[0].Length, firstRowNumbers, numbersBefore: null, secondRowNumbers);
 
             for (int i = 1; i < text.Length - 1; i++)
             {
                 var rowNumbers = FindNumbers(text[i], out List<int> specialCharacters);
-                FindNumbers(text[i - 1], out List<int> specialCharactersBefore);
-                FindNumbers(text[i + 1], out List<int> specialCharactersAfter);
+                var rowNumbersBefore = FindNumbers(text[i - 1], out List<int> specialCharactersBefore);
+                var rowNumbersAfter = FindNumbers(text[i + 1], out List<int> specialCharactersAfter);
                 partNumberSum += FindPartNumbers(text[i], rowNumbers, specialCharacters, specialCharactersBefore, specialCharactersAfter);
+
+                var asterisks = FindAsterisks(text[i]);
+                gearRatioSum += FindGears(asterisks, text[i].Length, rowNumbers, rowNumbersBefore, rowNumbersAfter);
             }
 
             var lastRowNumbers = FindNumbers(text[text.Length - 1], out List<int> specialCharactersLastRow);
-            FindNumbers(text[text.Length - 2], out List<int> specialCharactersLastButOneRow);
+            var lastButOneRowNumbers = FindNumbers(text[text.Length - 2], out List<int> specialCharactersLastButOneRow);
             partNumberSum += FindPartNumbers(text[text.Length - 1], lastRowNumbers, specialCharactersLastRow, specialCharactersLastButOneRow, indexesAfter: null);
 
+            var lastRowAsterisks = FindAsterisks(text[text.Length - 1]);
+            gearRatioSum += FindGears(lastRowAsterisks, text[text.Length - 1].Length, firstRowNumbers, numbersBefore: lastButOneRowNumbers, numbersAfter: null);
+
             Console.WriteLine(partNumberSum);
+            Console.WriteLine(gearRatioSum);
         }
 
         /// <summary>
@@ -176,9 +187,9 @@ namespace GearRatios
         /// <param name="numbersBefore"></param>
         /// <param name="numbersAfter"></param>
         /// <returns></returns>
-        static List<int> FindGears(List<int> asteriskIndexes, int rowLength, List<(int index, int length, int value)> numbersSameRow, List<(int index, int length, int value)> numbersBefore = null, List<(int index, int length, int value)> numbersAfter = null)
+        static int FindGears(List<int> asteriskIndexes, int rowLength, List<(int index, int length, int value)> numbersSameRow, List<(int index, int length, int value)> numbersBefore = null, List<(int index, int length, int value)> numbersAfter = null)
         {
-            List<int> gearRatios = new List<int>();
+            int gearRatios = 0;
 
             foreach (var index in asteriskIndexes)
             {
@@ -239,7 +250,7 @@ namespace GearRatios
                 // Check if numbers make a gear
                 if (gearValues.Count == 2)
                 {
-                    gearRatios.Add(gearValues[0] * gearValues[1]);
+                    gearRatios += gearValues[0] * gearValues[1];
                 }
             }
 
