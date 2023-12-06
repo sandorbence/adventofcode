@@ -40,7 +40,7 @@ namespace GearRatios
             partNumberSum += FindPartNumbers(text[text.Length - 1], lastRowNumbers, specialCharactersLastRow, specialCharactersLastButOneRow, indexesAfter: null);
 
             var lastRowAsterisks = FindAsterisks(text[text.Length - 1]);
-            gearRatioSum += FindGears(lastRowAsterisks, text[text.Length - 1].Length, firstRowNumbers, numbersBefore: lastButOneRowNumbers, numbersAfter: null);
+            gearRatioSum += FindGears(lastRowAsterisks, text[text.Length - 1].Length, lastRowNumbers, numbersBefore: lastButOneRowNumbers, numbersAfter: null);
 
             Console.WriteLine(partNumberSum);
             Console.WriteLine(gearRatioSum);
@@ -206,7 +206,7 @@ namespace GearRatios
                 // Check left
                 if ((index > 0) && (rightSides.Select(number => number.index).Contains(index - 1)))
                 {
-                    gearValues.Add(rightSides.Where(number => number.index == index - 1).ToList().First().value);
+                    gearValues.AddRange(rightSides.Where(number => number.index == index - 1).ToList().Select(number=>number.value).ToList());
                 }
 
                 List<(int index, int value)> leftSides = numbersSameRow.Select(number => (number.index, number.value)).ToList();
@@ -220,7 +220,7 @@ namespace GearRatios
                 // Check right
                 if ((index < rowLength - 1) && (leftSides.Select(number => number.index).Contains(index + 1)))
                 {
-                    gearValues.Add(leftSides.Where(number => number.index == index + 1).ToList().First().value);
+                    gearValues.AddRange(leftSides.Where(number => number.index == index + 1).ToList().Select(number=>number.value).ToList());
                 }
 
                 List<(int index, int value)> numberLengths = new List<(int index, int value)>();
@@ -229,7 +229,7 @@ namespace GearRatios
                 {
                     foreach (var number in numbersBefore)
                     {
-                        numberLengths.AddRange(ListIndexes(number.index, number.length, number.index));
+                        numberLengths.AddRange(ListIndexes(number.index, number.length, number.value));
                     }
                 }
 
@@ -237,14 +237,14 @@ namespace GearRatios
                 {
                     foreach (var number in numbersAfter)
                     {
-                        numberLengths.AddRange(ListIndexes(number.index, number.length, number.index));
+                        numberLengths.AddRange(ListIndexes(number.index, number.length, number.value));
                     }
                 }
 
                 // Check top and bottom
                 if (numberLengths.Select(number => number.index).Contains(index))
                 {
-                    gearValues.Add(numberLengths.Where(number => number.index == index).First().value);
+                    gearValues.AddRange(numberLengths.Where(number => number.index == index).Select(number => number.value).ToList());
                 }
 
                 // Check if numbers make a gear
@@ -257,6 +257,13 @@ namespace GearRatios
             return gearRatios;
         }
 
+        /// <summary>
+        /// Get the number value at all indexes it takes up.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="length"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         static List<(int index, int value)> ListIndexes(int index, int length, int value)
         {
             List<(int index, int value)> indexes = new List<(int, int)>();
