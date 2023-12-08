@@ -12,8 +12,7 @@
 
             string[] text = File.ReadAllLines(filePath);
 
-            //int points = 0;
-            int copies = 0;
+            int points = 0;
 
             // Initialize all games with one copy
             games = new int[text.Length];
@@ -24,15 +23,11 @@
 
             for (int i = 0; i < text.Length; i++)
             {
-                for (int j = 0; j < games[i]; j++)
-                {
-                    copies += ParseLine(text[i]);
-                }
-                //points += ParseLine(text[i]);
+                points += ParseLine(text[i]);
             }
 
-            //Console.WriteLine(points);
-            Console.WriteLine(copies);
+            Console.WriteLine($"Point in the first half: {points}.");
+            Console.WriteLine($"Copies in the second half: {games.ToList().Sum()}.");
         }
 
         /// <summary>
@@ -40,7 +35,7 @@
         /// </summary>
         /// <param name="line"></param>
         /// <returns></returns>
-        static int ParseLine(string line, bool firstPart = false)
+        static int ParseLine(string line)
         {
             string[] firstHalf = line.Split(':')[0].Split(' ');
             string cardIndexString = "";
@@ -71,19 +66,16 @@
 
             int matches = GetCardMatches(winningNumbers, yourNumbers);
 
+            // Add copies
             if (matches != 0)
             {
-                for (int i = 0; i < matches + 1; i++)
+                for (int i = 0; i < matches; i++)
                 {
-                    games[cardIndex + i]++;
+                    games[cardIndex + i] += games[cardIndex - 1];
                 }
             }
 
-            if (firstPart)
-                return matches > 0 ? (int)Math.Pow(2, matches - 1) : 0;
-
-            Console.WriteLine($"At the end of game {cardIndex}.");
-            return matches;
+            return matches > 0 ? (int)Math.Pow(2, matches - 1) : 0;
         }
 
         /// <summary>
