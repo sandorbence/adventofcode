@@ -19,16 +19,24 @@ namespace CamelCards
                 hands.Add(GetHandsAndBets(text[i]));
             }
 
-            List<(string hand, int bet)> rankedHands = RankHands(hands);
+            List<(string hand, int bet)> rankedHandsFirstHalf = RankHands(hands);
+            List<(string hand, int bet)> rankedHandsSecondHalf = RankHands(hands, true);
 
-            int finalScore = 0;
+            int finalScoreFirstHalf = 0;
+            int finalScoreSecondHalf = 0;
 
-            for (int i = 0; i < rankedHands.Count; i++)
+            for (int i = 0; i < rankedHandsFirstHalf.Count; i++)
             {
-                finalScore += (i + 1) * rankedHands[i].bet;
+                finalScoreFirstHalf += (i + 1) * rankedHandsFirstHalf[i].bet;
+            }
+            for (int i = 0; i < rankedHandsSecondHalf.Count; i++)
+            {
+                finalScoreSecondHalf += (i + 1) * rankedHandsSecondHalf[i].bet;
             }
 
-            Console.WriteLine($"First half: {finalScore}");
+            Console.WriteLine($"First half: {finalScoreFirstHalf}");
+            Console.WriteLine($"Second half: {finalScoreSecondHalf}");
+
         }
 
         /// <summary>
@@ -45,8 +53,9 @@ namespace CamelCards
         /// Get the type of a hand.
         /// </summary>
         /// <param name="hand"></param>
+        /// <param name="secondHalf"></param>
         /// <returns></returns>
-        static string GetType(string hand)
+        static string GetType(string hand, bool secondHalf = false)
         {
             List<(char symbol, int count)> cards = new List<(char symbol, int count)>();
 
@@ -70,6 +79,27 @@ namespace CamelCards
             int jokerCount = cards.Any(card => card.symbol == 'J') ? cards.Where(card => card.symbol == 'J').First().count : 0;
 
             int maxCount = cards.Select(card => card.count).Max();
+
+            if (jokerCount > 0 && secondHalf)
+            {
+                var maxCountCards = cards.Where(card => card.count == maxCount).ToList();
+
+                // Only add jokers to hand if the max count is not a joker
+                if (maxCountCards.Count == 1 && maxCountCards.First().symbol == 'J')
+                {
+                    // Find the second most common card
+                    if (maxCount != 5)
+                        maxCount = cards.OrderByDescending(card => card.count).ToList()[1].count + jokerCount;
+                }
+                // If there are two pairs in hand or most common card is not joker
+                else
+                {
+                    maxCount += jokerCount;
+                }
+
+                // So that the different type of cards will be one less
+                cards.Remove(maxCountCards.First());
+            }
 
             return maxCount switch
             {
@@ -95,15 +125,21 @@ namespace CamelCards
         /// </summary>
         /// <param name="hands"></param>
         /// <returns></returns>
-        static List<(string hand, int bet)> RankHands(List<(string hand, int bet)> hands)
+        static List<(string hand, int bet)> RankHands(List<(string hand, int bet)> hands, bool secondHalf = false)
         {
             List<(string hand, int bet, int typeRank)> sortedHands = new List<(string hand, int bet, int typeRank)>();
 
-            sortedHands.AddRange(hands.Select(hand => (hand.hand, hand.bet, typeRanks[GetType(hand.hand)])));
+            sortedHands.AddRange(hands.Select(hand => (hand.hand, hand.bet, typeRanks[GetType(hand.hand, secondHalf)])));
 
             sortedHands = sortedHands.OrderBy(hand => hand.typeRank).ToList();
 
             List<(string hand, int bet)> orderedHands = new List<(string hand, int bet)>();
+
+            if (secondHalf)
+            {
+                symbolRanks.Remove('J');
+                symbolRanks['J'] = -1;
+            }
 
             foreach (var type in sortedHands.GroupBy(hand => hand.typeRank))
             {
