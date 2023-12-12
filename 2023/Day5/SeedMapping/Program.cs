@@ -27,6 +27,7 @@ namespace SeedMapping
 
             List<long> locations = new List<long>();
 
+            // First half
             foreach (long seed in seeds)
             {
                 long source = seed;
@@ -38,6 +39,50 @@ namespace SeedMapping
 
                 locations.Add(source);
             }
+
+            Console.WriteLine(locations.Min());
+
+            // Second half
+            List<(long start, long end)> seedRanges = new List<(long start, long end)>();
+
+            for (int i = 0; i < seeds.Count; i += 2)
+            {
+                seedRanges.Add((seeds[i], seeds[i] + seeds[i + 1] - 1));
+            }
+
+            List<(long start, long end)> destinations = new List<(long start, long end)>();
+
+            foreach (var seedRange in seedRanges)
+            {
+                var sourceRange = new List<(long start, long end)> { seedRange };
+
+                for (int i = 0; i < allMappings.Count; i++)
+                {
+                    // Find all intervals for a specific map type
+                    var intervals = new List<(long start, long end)>();
+                    var newSource = new List<(long start, long end)>();
+
+                    foreach (var interval in sourceRange)
+                    {
+                        intervals.AddRange(FindIntervals(allMappings[i], interval.start, interval.end));
+                    }
+
+                    // For each interval find the destination
+                    foreach (var interval in intervals)
+                    {
+                        long start = FindDestination(allMappings[i], interval.start);
+                        long end = FindDestination(allMappings[i], interval.end);
+
+                        newSource.Add((start, end));
+                    }
+
+                    sourceRange = newSource;
+                }
+
+                destinations.AddRange(sourceRange);
+            }
+
+            locations = destinations.SelectMany(interval => new long[] { interval.start, interval.end }).ToList();
 
             Console.WriteLine(locations.Min());
         }
@@ -109,7 +154,6 @@ namespace SeedMapping
                 long sourceStart = mapping["start"].source;
                 long sourceEnd = mapping["end"].source;
                 long destStart = mapping["start"].destination;
-                long destEnd = mapping["end"].destination;
 
                 if (source >= sourceStart && source <= sourceEnd)
                 {
@@ -118,6 +162,68 @@ namespace SeedMapping
             }
 
             return source;
+        }
+
+        /// <summary>
+        /// Find all intervals for a range of items that need to be mapped.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        static List<(long start, long end)> FindIntervals(List<Dictionary<string, (long source, long destination)>> map, long start, long end)
+        {
+            List<(long start, long end)> intervals = new List<(long start, long end)>();
+
+            long sourceStart = start;
+            long sourceEnd = end;
+
+            // Order mappings from lowest start to highest
+            var orderedMaps = map.OrderBy(mapping => mapping["start"].source).ToList();
+
+            foreach (var mapping in orderedMaps)
+            {
+                long mappingIntervalStart = mapping["start"].source;
+                long mappingIntervalEnd = mapping["end"].source;
+
+                if (sourceStart < mappingIntervalStart)
+                {
+                    // Source is out of mapping interval
+                    if (sourceEnd < mappingIntervalStart)
+                    {
+                        intervals.Add((sourceStart, sourceEnd));
+                        break;
+                    }
+
+                    intervals.Add((sourceStart, mappingIntervalStart - 1));
+
+                    sourceStart = mappingIntervalStart;
+                }
+
+                if (sourceStart >= mappingIntervalStart)
+                {
+                    // Source is out of mapping interval
+                    if (sourceStart > mappingIntervalEnd)
+                        continue;
+
+                    // Source is fully contained in one of the mappings
+                    if (sourceEnd <= mappingIntervalEnd)
+                    {
+                        intervals.Add((sourceStart, sourceEnd));
+                        break;
+                    }
+
+                    intervals.Add((sourceStart, mappingIntervalEnd));
+
+                    if (sourceEnd != mappingIntervalEnd)
+                        sourceStart = mappingIntervalEnd + 1;
+                }
+            }
+
+            // Add last interval if it is greater than the last mapping interval
+            if (sourceStart > orderedMaps.Last()["end"].source)
+                intervals.Add((sourceStart, sourceEnd));
+
+            return intervals;
         }
     }
 }
