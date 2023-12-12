@@ -12,13 +12,18 @@
 
 
             ParseInput(text);
-            int moves = Move();
-            Console.WriteLine($"Total number of moves needed: {moves}");
+
+            // First part
+            //int moves = Move();
+            //Console.WriteLine($"Total number of moves needed: {moves}");
+
+            // Second Part
+            Move(false);
         }
 
         static Dictionary<Point, (string left, string right)> points = new Dictionary<Point, (string left, string right)>();
+        static Dictionary<Point, Point> pointsAfterIteration = new Dictionary<Point, Point>();
         static string instructions = "";
-        static Point currentPoint;
 
         /// <summary>
         /// Parse the input string.
@@ -61,35 +66,89 @@
         /// </summary>
         /// <param name="point"></param>
         /// <param name="instruction"></param>
-        static void MoveOne(Point point, char instruction)
+        static void MoveOne(ref Point point, char instruction)
         {
             if (instruction == 'L')
-                currentPoint = point.Left;
+                point = point.Left;
             else
-                currentPoint = point.Right;
+                point = point.Right;
         }
 
         /// <summary>
         /// Move from point to point until we reach ZZZ.
         /// </summary>
+        /// <param name="singleStart"></param>
         /// <returns></returns>
-        static int Move()
+        static int Move(bool singleStart = true)
         {
-            currentPoint = points.Where(point => point.Key.Name == "AAA").First().Key;
-            int moves = 0;
+            List<Point> startingPoints;
 
-            for (int i = 0; ; i++)
+            if (singleStart)
+                startingPoints = new List<Point> { points.Where(point => point.Key.Name == "AAA").First().Key };
+            else
             {
-                // Start from the beginning
-                if (i >= instructions.Length)
-                    i = 0;
-                moves++;
-                MoveOne(currentPoint, instructions[i]);
-                if (currentPoint == points.Where(point => point.Key.Name == "ZZZ").First().Key)
-                    break;
+                startingPoints = points.Where(point => point.Key.Name.EndsWith("A")).Select(item => item.Key).ToList();
             }
 
-            return moves;
+            int movesSingle = 0;
+            List<int> allMoves = new List<int>();
+            List<List<int>> divisors = new List<List<int>>();
+
+            foreach (var point in points)
+            {
+                var currentPoint = point.Key;
+
+                for (int i = 0; i < instructions.Length; i++)
+                {
+                    MoveOne(ref currentPoint, instructions[i]);
+                }
+
+                pointsAfterIteration[point.Key] = currentPoint;
+            }
+
+            int leastCommonDivisor = 1;
+
+            foreach (var point in startingPoints)
+            {
+                int moves = 0;
+                var currentPoint = point;
+
+                for (int i = 0; ; i++)
+                {
+                    moves += instructions.Length * leastCommonDivisor;
+                    currentPoint = pointsAfterIteration[currentPoint];
+                    if (singleStart && currentPoint == points.Where(point => point.Key.Name == "ZZZ").First().Key)
+                        break;
+                    if (!singleStart && currentPoint.Name.EndsWith("Z"))
+                        break;
+                }
+
+                allMoves.Add(moves);
+                leastCommonDivisor *= moves;
+                movesSingle = moves;
+            }
+
+            if (singleStart)
+                return movesSingle;
+
+            foreach (var move in allMoves)
+            {
+                FindDivisors(move);
+            }
+            return 0;
+        }
+
+        static List<int> FindDivisors(int number)
+        {
+            List<int> result = new List<int>();
+
+            for (int i = 2; i < number - 1; i++)
+            {
+                if (number % i == 0)
+                    result.Add(i);
+            }
+
+            return result;
         }
 
         /// <summary>
