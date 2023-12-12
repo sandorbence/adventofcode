@@ -79,7 +79,7 @@
         /// </summary>
         /// <param name="singleStart"></param>
         /// <returns></returns>
-        static int Move(bool singleStart = true)
+        static long Move(bool singleStart = true)
         {
             List<Point> startingPoints;
 
@@ -90,8 +90,8 @@
                 startingPoints = points.Where(point => point.Key.Name.EndsWith("A")).Select(item => item.Key).ToList();
             }
 
-            int movesSingle = 0;
-            List<int> allMoves = new List<int>();
+            long movesSingle = 0;
+            List<long> allMoves = new List<long>();
             List<List<int>> divisors = new List<List<int>>();
 
             foreach (var point in points)
@@ -106,39 +106,32 @@
                 pointsAfterIteration[point.Key] = currentPoint;
             }
 
-            int leastCommonDivisor = 1;
-
             foreach (var point in startingPoints)
             {
-                int moves = 0;
+                long moves = 0;
                 var currentPoint = point;
 
-                for (int i = 0; ; i++)
+                while(true)
                 {
-                    moves += instructions.Length * leastCommonDivisor;
+                    moves += instructions.Length;
                     currentPoint = pointsAfterIteration[currentPoint];
-                    if (singleStart && currentPoint == points.Where(point => point.Key.Name == "ZZZ").First().Key)
-                        break;
+                    //if (singleStart && currentPoint == points.Where(point => point.Key.Name == "ZZZ").First().Key)
+                    //    break;
                     if (!singleStart && currentPoint.Name.EndsWith("Z"))
                         break;
                 }
 
                 allMoves.Add(moves);
-                leastCommonDivisor *= moves;
                 movesSingle = moves;
             }
 
             if (singleStart)
                 return movesSingle;
 
-            foreach (var move in allMoves)
-            {
-                FindDivisors(move);
-            }
             return 0;
         }
 
-        static List<int> FindDivisors(int number)
+        static List<int> FindDivisors(long number)
         {
             List<int> result = new List<int>();
 
