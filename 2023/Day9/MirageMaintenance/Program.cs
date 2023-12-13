@@ -17,7 +17,16 @@
                 result += Extrapolate(GetHistory(text[i]));
             }
 
-            Console.WriteLine(result);
+            Console.WriteLine($"First half: {result}");
+
+            result = 0;
+
+            for (int i = 0; i < text.Length; i++)
+            {
+                result += Extrapolate(GetHistory(text[i]), true);
+            }
+
+            Console.WriteLine($"Second half: {result}");
         }
 
         /// <summary>
@@ -42,7 +51,7 @@
         /// </summary>
         /// <param name="history"></param>
         /// <returns></returns>
-        static int Extrapolate(List<int> history)
+        static int Extrapolate(List<int> history, bool backwards = false)
         {
             List<List<int>> diffList = new List<List<int>>() { history };
             List<int> prevDiffs = history;
@@ -63,17 +72,34 @@
                     break;
             }
 
-            // Add the last diff again to start extrapolating
-            int lastValue = diffList[diffList.Count - 2].Last();
-            diffList[diffList.Count - 2].Add(lastValue);
-
-            for (int i = diffList.Count - 2; i > 0; i--)
+            if (!backwards)
             {
-                int newValue = diffList[i].Last() + diffList[i - 1].Last();
-                diffList[i - 1].Add(newValue);
-            }
+                // Add the last diff again to start extrapolating
+                int lastValue = diffList[diffList.Count - 2].Last();
+                diffList[diffList.Count - 2].Add(lastValue);
 
-            return diffList.First().Last();
+                for (int i = diffList.Count - 2; i > 0; i--)
+                {
+                    int newValue = diffList[i].Last() + diffList[i - 1].Last();
+                    diffList[i - 1].Add(newValue);
+                }
+
+                return diffList.First().Last();
+            }
+            else
+            {
+                // Add the first diff again to start extrapolating
+                int firstValue = diffList[diffList.Count - 2].First();
+                diffList[diffList.Count - 2].Add(firstValue);
+
+                for (int i = diffList.Count - 2; i > 0; i--)
+                {
+                    int newValue = diffList[i - 1].First() - diffList[i].First();
+                    diffList[i - 1].Insert(0, newValue);
+                }
+
+                return diffList.First().First();
+            }
         }
     }
 }
