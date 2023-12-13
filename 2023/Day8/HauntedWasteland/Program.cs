@@ -10,19 +10,17 @@
 
             string[] text = File.ReadAllLines(filePath);
 
-
             ParseInput(text);
 
             // First part
-            //int moves = Move();
-            //Console.WriteLine($"Total number of moves needed: {moves}");
+            long moves = Move();
+            Console.WriteLine($"Total number of moves needed: {moves}");
 
             // Second Part
             Move(false);
         }
 
         static Dictionary<Point, (string left, string right)> points = new Dictionary<Point, (string left, string right)>();
-        static Dictionary<Point, Point> pointsAfterIteration = new Dictionary<Point, Point>();
         static string instructions = "";
 
         /// <summary>
@@ -92,31 +90,22 @@
 
             long movesSingle = 0;
             List<long> allMoves = new List<long>();
-            List<List<int>> divisors = new List<List<int>>();
-
-            foreach (var point in points)
-            {
-                var currentPoint = point.Key;
-
-                for (int i = 0; i < instructions.Length; i++)
-                {
-                    MoveOne(ref currentPoint, instructions[i]);
-                }
-
-                pointsAfterIteration[point.Key] = currentPoint;
-            }
 
             foreach (var point in startingPoints)
             {
                 long moves = 0;
                 var currentPoint = point;
 
-                while(true)
+                for (int i = 0; ; i++)
                 {
-                    moves += instructions.Length;
-                    currentPoint = pointsAfterIteration[currentPoint];
-                    //if (singleStart && currentPoint == points.Where(point => point.Key.Name == "ZZZ").First().Key)
-                    //    break;
+                    // Start from the beginning if end of instructions is reached
+                    if (i == instructions.Length)
+                        i = 0;
+                    moves++;
+                    char instruction = instructions[i];
+                    MoveOne(ref currentPoint, instruction);
+                    if (singleStart && currentPoint == points.Where(point => point.Key.Name == "ZZZ").First().Key)
+                        break;
                     if (!singleStart && currentPoint.Name.EndsWith("Z"))
                         break;
                 }
