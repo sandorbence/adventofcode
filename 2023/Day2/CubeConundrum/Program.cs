@@ -1,4 +1,9 @@
-﻿namespace CubeConundrum
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
+namespace CubeConundrum
 {
     internal class Program
     {

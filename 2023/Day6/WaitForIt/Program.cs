@@ -1,4 +1,8 @@
-﻿namespace WaitForIt
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+
+namespace WaitForIt
 {
     internal class Program
     {
