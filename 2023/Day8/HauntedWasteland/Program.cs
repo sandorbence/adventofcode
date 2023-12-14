@@ -1,4 +1,9 @@
-﻿namespace HauntedWasteland
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
+namespace HauntedWasteland
 {
     internal class Program
     {
@@ -14,10 +19,11 @@
 
             // First part
             long moves = Move();
-            Console.WriteLine($"Total number of moves needed: {moves}");
+            Console.WriteLine($"Total number of moves needed in the first part: {moves}");
 
             // Second Part
-            Move(false);
+            moves = Move(false);
+            Console.WriteLine($"Total number of moves needed in the second part: {moves}");
         }
 
         static Dictionary<Point, (string left, string right)> points = new Dictionary<Point, (string left, string right)>();
@@ -100,14 +106,20 @@
                 {
                     // Start from the beginning if end of instructions is reached
                     if (i == instructions.Length)
+                    {
                         i = 0;
+                    }
                     moves++;
-                    char instruction = instructions[i];
-                    MoveOne(ref currentPoint, instruction);
-                    if (singleStart && currentPoint == points.Where(point => point.Key.Name == "ZZZ").First().Key)
+                    MoveOne(ref currentPoint, instructions[i]);
+
+                    if (singleStart && currentPoint == points.Where(p => p.Key.Name == "ZZZ").First().Key)
+                    {
                         break;
+                    }
                     if (!singleStart && currentPoint.Name.EndsWith("Z"))
+                    {
                         break;
+                    }
                 }
 
                 allMoves.Add(moves);
@@ -117,9 +129,30 @@
             if (singleStart)
                 return movesSingle;
 
-            return 0;
+            allMoves.ForEach(moves => Console.WriteLine(moves));
+
+            List<int> divisors = new List<int>();
+
+            foreach (var moves in allMoves)
+            {
+                divisors.AddRange(FindDivisors(moves));
+            }
+
+            long lcm = 1;
+
+            for (int i = 0; i < divisors.Count - 1; i++)
+            {
+                lcm = FindLeastCommonMultiple(divisors[i], lcm);
+            }
+
+            return lcm;
         }
 
+        /// <summary>
+        /// Find the divisors of a number except for 1 and itself.
+        /// </summary>
+        /// <param name="number"></param>
+        /// <returns></returns>
         static List<int> FindDivisors(long number)
         {
             List<int> result = new List<int>();
@@ -133,6 +166,35 @@
             return result;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static long FindLeastCommonMultiple(long a, long b)
+        {
+            long num1, num2;
+            if (a > b)
+            {
+                num1 = a; num2 = b;
+            }
+            else
+            {
+                num1 = b; num2 = a;
+            }
+
+            for (int i = 1; i < num2; i++)
+            {
+                long mult = num1 * i;
+                if (mult % num2 == 0)
+                {
+                    return mult;
+                }
+            }
+
+            return num1 * num2;
+        }
         /// <summary>
         /// Class representing one point.
         /// </summary>
