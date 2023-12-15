@@ -187,17 +187,27 @@ namespace PipeMaze
                         continue;
                     }
 
-                    bool leftSide = loopElements.Any(element => element.row == i && element.column < j);
-                    bool rightSide = loopElements.Any(element => element.row == i && element.column > j);
-                    bool topSide = loopElements.Any(element => element.row < i && element.column == j);
-                    bool bottomSide = loopElements.Any(element => element.row > i && element.column == j);
+                    var throughElements = loopElements.Where(element => element.row == i && element.column > j).ToList();
+                    string restRow = "";
 
-                    if (leftSide && rightSide && topSide && bottomSide)
+                    for (int k = j + 1; k < row.Length; k++)
                     {
-                        var throughElements = loopElements.Where(element => element.row == i && element.column > j).ToList();
-                        string restRow = "";
+                        if (!throughElements.Contains((i, k)))
+                        {
+                            restRow += '.';
+                        }
+                        else
+                        {
+                            restRow += row[k];
+                        }
+                    }
 
-                        for (int k = j + 1; k < row.Length; k++)
+                    if (throughElements.Any(element => rows[element.row][element.column] == 'S'))
+                    {
+                        throughElements = loopElements.Where(element => element.row == i && element.column < j).ToList();
+                        restRow = "";
+
+                        for (int k = 0; k < j; k++)
                         {
                             if (!throughElements.Contains((i, k)))
                             {
@@ -208,34 +218,16 @@ namespace PipeMaze
                                 restRow += row[k];
                             }
                         }
+                    }
 
-                        if (throughElements.Any(element => rows[element.row][element.column] == 'S'))
-                        {
-                            throughElements = loopElements.Where(element => element.row == i && element.column < j).ToList();
-                            restRow = "";
+                    MutateRow(restRow, out int sameEnd, out int sameLength, out int diffEnd, out int diffLength);
 
-                            for (int k = 0; k < j; k++)
-                            {
-                                if (!throughElements.Contains((i, k)))
-                                {
-                                    restRow += '.';
-                                }
-                                else
-                                {
-                                    restRow += row[k];
-                                }
-                            }
-                        }
+                    int throughNumber = throughElements.Count - sameLength - diffLength + diffEnd;
 
-                        MutateRow(restRow, out int sameEnd, out int sameLength, out int diffEnd, out int diffLength);
+                    if (throughNumber % 2 == 1)
+                    {
+                        innerTiles++;
 
-                        int throughNumber = throughElements.Count - sameLength - diffLength + diffEnd;
-
-                        if (throughNumber % 2 == 1)
-                        {
-                            innerTiles++;
-
-                        }
                     }
                 }
             }
