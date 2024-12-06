@@ -9,6 +9,7 @@
             Console.WriteLine($"First half: {FindWords(input)}");
             Console.WriteLine($"Second half: {FindXMas(input)}");
         }
+        
         private static string[] ParseInput()
         {
             DirectoryInfo baseDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
