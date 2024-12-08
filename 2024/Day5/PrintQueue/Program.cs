@@ -6,7 +6,8 @@
         {
             string input = ParseInput();
 
-            Console.WriteLine($"First half: {FindRightUpdates(input)}");
+            Console.WriteLine($"First half: {FindUpdates(input, right: true)}");
+            Console.WriteLine($"Second half: {FindUpdates(input, right: false)}");
         }
 
         private static string ParseInput()
@@ -18,7 +19,7 @@
             return File.ReadAllText(filePath);
         }
 
-        private static int FindRightUpdates(string input)
+        private static int FindUpdates(string input, bool right = true)
         {
             string[] rules = input.Split("\r\n\r\n")[0].Split("\r\n");
             string[] updates = input.Split("\r\n\r\n")[1].Split("\r\n");
@@ -39,15 +40,16 @@
                 }
             }
 
-            int middlePageSum = 0;
+            int rightMiddlePageSum = 0;
+            int wrongMiddlePageSum = 0;
 
             foreach (string update in updates)
             {
-                int[] nums = update.Split(',').Select(x => Convert.ToInt32(x)).ToArray();
+                List<int> nums = update.Split(',').Select(x => Convert.ToInt32(x)).ToList();
 
                 bool isGoodUpdate = true;
 
-                for (int i = 0; i < nums.Length - 1; i++)
+                for (int i = 0; i < nums.Count - 1; i++)
                 {
                     if (nums[(i + 1)..].Any(x => orders[x].Contains(nums[i])))
                     {
@@ -58,11 +60,22 @@
 
                 if (isGoodUpdate)
                 {
-                    middlePageSum += nums[(nums.Length - 1) / 2];
+                    rightMiddlePageSum += nums[(nums.Count - 1) / 2];
+                }
+                else
+                {
+                    nums.Sort((x, y) =>
+                    {
+                        if (orders[y].Contains(x)) return 1;
+
+                        return -1;
+                    });
+
+                    wrongMiddlePageSum += nums[(nums.Count - 1) / 2];
                 }
             }
 
-            return middlePageSum;
+            return right ? rightMiddlePageSum : wrongMiddlePageSum;
         }
     }
 }
