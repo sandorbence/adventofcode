@@ -26,7 +26,7 @@ namespace BridgeRepair
                 }
             }
 
-            Console.WriteLine($"First half: {sum}");
+            Console.WriteLine($"Sum: {sum}");
         }
 
         private static string[] ParseInput()

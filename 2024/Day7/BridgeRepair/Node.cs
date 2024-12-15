@@ -11,7 +11,12 @@ namespace BridgeRepair
 
         public long ApplyValue(long parentValue)
         {
-            return this.Operator == "+" ? parentValue + this.Value : parentValue * this.Value;
+            return this.Operator switch
+            {
+                "+" => parentValue + this.Value,
+                "*" => parentValue * this.Value,
+                _ => Convert.ToInt64($"{parentValue}{this.Value}")
+            };
         }
 
         public static Node BuildTree(Node node, List<int> nums)
@@ -20,8 +25,10 @@ namespace BridgeRepair
             {
                 Node plus = new Node { Value = nums[0], Operator = "+" };
                 Node mult = new Node { Value = nums[0], Operator = "*" };
+                Node concat = new Node { Value = nums[0], Operator = "||" };
                 node.Children.Add(BuildTree(plus, new List<int>(nums[1..])));
                 node.Children.Add(BuildTree(mult, new List<int>(nums[1..])));
+                node.Children.Add(BuildTree(concat, new List<int>(nums[1..])));
             }
 
             return node;
@@ -48,7 +55,7 @@ namespace BridgeRepair
             result = current.ApplyValue(result);
 
             if (result > expected) return;
-            if (result == expected) throw new Exception("success");
+            if (result == expected && current.Children.Count == 0) throw new Exception("success");
 
             foreach (Node child in current.Children)
             {
