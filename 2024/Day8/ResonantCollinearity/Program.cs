@@ -11,6 +11,7 @@ namespace ResonantCollinearity
         {
             Dictionary<(int, int), char> map = ParseInput();
             Console.WriteLine($"First half: {FindAntinodes(map)}");
+            Console.WriteLine($"Second half: {FindAntinodes(map, second: true)}");
         }
 
         private static Dictionary<(int, int), char> ParseInput()
@@ -34,11 +35,9 @@ namespace ResonantCollinearity
             return result;
         }
 
-        private static int FindAntinodes(Dictionary<(int, int), char> map)
+        private static int FindAntinodes(Dictionary<(int, int), char> map, bool second = false)
         {
             HashSet<char> visitedAntennas = new HashSet<char>();
-
-            using StreamWriter sw = new StreamWriter("asd.txt", true);
             List<(int, int)> allLocations = new List<(int, int)>();
 
             foreach (var area in map)
@@ -55,8 +54,12 @@ namespace ResonantCollinearity
                     foreach (var otherAntenna in antennas.Where(x => x.row != antenna.row || x.col != antenna.col))
                     {
                         List<(int, int)> possibleLocations = GetAntinodeLocations(antenna, otherAntenna);
+                        (int row, int col) vector = GetVector(antenna, otherAntenna);
 
-                        var antinodes = map.Where(x =>
+                        var antinodes = second ? map.Where(x =>
+                        IsInLine(vector, antenna, x.Key))
+                            .ToList()
+                            : map.Where(x =>
                          possibleLocations.Contains(x.Key))
                             .ToList();
 
@@ -64,8 +67,6 @@ namespace ResonantCollinearity
                     }
                 }
             }
-
-            allLocations.Distinct().OrderBy(x => x.Item1).ThenBy(x => x.Item2).ToList().ForEach(x => sw.WriteLine(x));
 
             return allLocations.Distinct().Count();
         }
@@ -78,6 +79,16 @@ namespace ResonantCollinearity
             result.Add((2 * second.row - first.row, 2 * second.col - first.col));
 
             return result;
+        }
+
+        private static (int x, int y) GetVector((int row, int col) first, (int row, int col) second)
+        {
+            return (first.row - second.row, first.col - second.col);
+        }
+
+        private static bool IsInLine((int x, int y) vector, (int row, int col) antenna, (int row, int col) point)
+        {
+            return (point.row - antenna.row) * vector.y == (point.col - antenna.col) * vector.x;
         }
     }
 }
