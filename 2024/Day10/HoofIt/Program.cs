@@ -10,7 +10,9 @@ namespace HoofIt
         static void Main(string[] args)
         {
             Dictionary<(int, int), int> map = ParseInput();
-            Console.WriteLine($"Fist half: {FindTrails(map)}");
+            (int trails, int ratings) = FindTrails(map);
+            Console.WriteLine($"First half: {trails}");
+            Console.WriteLine($"Second half: {ratings}");
         }
 
         private static Dictionary<(int, int), int> ParseInput()
@@ -34,30 +36,33 @@ namespace HoofIt
             return result;
         }
 
-        private static int FindTrails(Dictionary<(int, int), int> map)
+        private static (int trails, int ratings) FindTrails(Dictionary<(int, int), int> map)
         {
             List<(int row, int col)> trailheads = map.Where(x => x.Value == 0).Select(x => x.Key).ToList();
 
             int trails = 0;
+            int ratings = 0;
 
             foreach ((int row, int col) trailhead in trailheads)
             {
                 HashSet<(int, int)> tops = new HashSet<(int, int)>();
-                Move(map, trailhead, tops);
+                List<(int, int)> tops2 = new List<(int, int)>();
+                Move(map, trailhead, tops, tops2);
+                ratings += tops2.Count();
                 trails += tops.Count;
             }
 
-            return trails;
+            return (trails, ratings);
         }
 
-        private static void Move(Dictionary<(int row, int col), int> map, (int row, int col) position, HashSet<(int, int)> visitedTops)
+        private static void Move(Dictionary<(int row, int col), int> map, (int row, int col) position, HashSet<(int, int)> trails, List<(int, int)> ratings)
         {
             int currentHeight = map.First(x => x.Key == position).Value;
 
             if (currentHeight == 9)
             {
-                visitedTops.Add(position);
-                return;
+                ratings.Add(position);
+                trails.Add(position);
             }
 
             List<(int row, int col)> nextPositions = map.Where(x => x.Value == currentHeight + 1
@@ -65,7 +70,7 @@ namespace HoofIt
 
             foreach ((int row, int col) nextPosition in nextPositions)
             {
-                Move(map, nextPosition, visitedTops);
+                Move(map, nextPosition, trails, ratings);
             }
         }
 
