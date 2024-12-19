@@ -9,46 +9,70 @@ namespace PlutonianPebbles
     {
         static void Main(string[] args)
         {
-            List<string> stones = ParseInput();
+            Dictionary<long, long> stones = ParseInput();
+            long sumFirstHalf = 0;
 
-            for (int i = 0; i < 25; i++)
+            for (int i = 0; i < 75; i++)
             {
                 stones = Blink(stones);
+
+                if (i == 24) sumFirstHalf = stones.Values.Sum();
             }
 
-            Console.WriteLine($"First half: {stones.Count}");
+            Console.WriteLine($"First half: {sumFirstHalf}");
+            Console.WriteLine($"Second half: {stones.Values.Sum()}");
         }
 
-        private static List<string> ParseInput()
+        private static Dictionary<long, long> ParseInput()
         {
             DirectoryInfo baseDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
 
             string filePath = Path.Combine(baseDirectory.FullName, "input.txt");
 
-            return File.ReadAllText(filePath).Split(' ')/*.Select(x => Convert.ToInt32(x))*/.ToList();
+            return File.ReadAllText(filePath).Split(' ').ToDictionary(x => Convert.ToInt64(x), x => (long)1);
         }
 
-        private static List<string> Blink(List<string> stones)
+        private static Dictionary<long, long> Blink(Dictionary<long, long> stones)
         {
-            List<string> newStones = new List<string>();
+            Dictionary<long, long> newStones = new Dictionary<long, long>(stones);
 
-            foreach (string stone in stones)
+            foreach (var stone in stones)
             {
-                newStones.AddRange(ApplyRules(stone));
+                newStones[stone.Key] -= stone.Value;
+
+                List<long> splitStones = ApplyRules(stone.Key);
+
+                foreach (long newStone in splitStones)
+                {
+                    if (newStones.ContainsKey(newStone))
+                    {
+                        newStones[newStone] += stone.Value;
+                    }
+                    else
+                    {
+                        newStones[newStone] = stone.Value;
+                    }
+                }
+
+                if (newStones[stone.Key]==0) newStones.Remove(stone.Key);
             }
 
             return newStones;
         }
 
-        private static List<string> ApplyRules(string stone)
+        private static List<long> ApplyRules(long stone)
         {
-            long num = Convert.ToInt64(stone);
+            string stoneChars = stone.ToString();
 
-            if (num == 0) return new List<string> { "1" };
+            if (stone == 0) return new List<long> { 1 };
 
-            if (stone.Length % 2 == 0) return new List<string> { stone[..(stone.Length / 2)], Convert.ToInt32(stone[(stone.Length / 2)..]).ToString() };
+            if (stoneChars.Length % 2 == 0) return new List<long>
+            {
+                Convert.ToInt64(stoneChars[..(stoneChars.Length / 2)]),
+                Convert.ToInt64(stoneChars[(stoneChars.Length / 2)..])
+            };
 
-            return new List<string> { (num * 2024).ToString() };
+            return new List<long> { stone * 2024 };
         }
     }
 }
